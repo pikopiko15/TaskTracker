@@ -6,11 +6,40 @@ namespace TaskCLI
     public class TaskManager
     {
         private const string FilePath = "tasks.json";
+
         private List<TaskModel> _tasks;
 
         public TaskManager()
         {
             _tasks = LoadTasks() ?? new List<TaskModel>();
+        }
+
+        public void AddTask(string description)
+        {
+            int id = _tasks.Count + 1;
+            TaskModel task = new TaskModel(id, description);
+
+            _tasks.Add(task);
+            SaveTasks();
+
+            Console.WriteLine($"Task added successfully (ID: {id})");
+        }
+
+        public void UpdateTaskDescription(int id, string description)
+        {
+            var task = _tasks.Find(t => t.Id == id);
+
+            if(task != null)
+            {
+                task.Description = description;
+                task.UpdatedAt = DateTime.Now;
+                SaveTasks();
+                Console.WriteLine($"Task updated successfully (ID: {id})");
+            }
+            else
+            {
+                Console.WriteLine($"Task with ID {id} not found.");
+            } 
         }
 
         private List<TaskModel>? LoadTasks()
@@ -46,6 +75,20 @@ namespace TaskCLI
                 Console.WriteLine(ex.Message);
 
                 return new List<TaskModel>();
+            }
+        }
+
+        private void SaveTasks()
+        {
+            try
+            {
+                var jsonData = JsonSerializer.Serialize(_tasks, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(FilePath, jsonData);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Error saving tasks.");
+                Console.WriteLine(ex.Message);
             }
         }
     }
