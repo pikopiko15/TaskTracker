@@ -42,6 +42,58 @@ namespace TaskCLI
             } 
         }
 
+        public void UpdateTaskStatus(int id, Status status)
+        {
+            var task = _tasks.Find(t => t.Id == id);
+
+            if(task != null)
+            {
+                task.Status = status;
+                task.UpdatedAt = DateTime.Now;
+            }
+            else
+            {
+                Console.WriteLine($"Task with ID {id} not found or invalid status.");
+            }
+        }
+
+        public void DeleteTask(int id)
+        {
+            var task = _tasks.Find(t => t.Id == id);
+
+            if (task != null)
+            {
+                _tasks.Remove(task);
+                SaveTasks();
+                Console.WriteLine($"Task deleted successfully (ID: {id})");
+            }
+            else
+            {
+                Console.WriteLine($"Task with ID {id} not found.");
+            }
+        }
+
+        public void ListTasks()
+        {
+            foreach(var task in _tasks)
+            {
+                Console.WriteLine(task);
+            }
+        }
+
+        public void ListTasksByStatus(Status status)
+        {
+            IEnumerable<TaskModel> tasks = _tasks.Where(t => t.Status == status).ToList();
+
+            if(tasks.Any())
+            {
+                foreach(var t in tasks)
+                {
+                    Console.WriteLine(t);
+                }
+            }
+        }
+
         private List<TaskModel>? LoadTasks()
         {
             try
