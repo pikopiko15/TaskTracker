@@ -42,7 +42,7 @@ namespace TaskCLI
             } 
         }
 
-        public void UpdateTaskStatus(int id, Status status)
+        public void UpdateTaskStatus(int id, string status)
         {
             var task = _tasks.Find(t => t.Id == id);
 
@@ -50,6 +50,7 @@ namespace TaskCLI
             {
                 task.Status = status;
                 task.UpdatedAt = DateTime.Now;
+                SaveTasks();
             }
             else
             {
@@ -75,13 +76,21 @@ namespace TaskCLI
 
         public void ListTasks()
         {
-            foreach(var task in _tasks)
+            if(_tasks.Any())
             {
-                Console.WriteLine(task);
+                foreach (var task in _tasks)
+                {
+                    Console.WriteLine(task);
+                }
             }
+            else
+            {
+                Console.WriteLine("There are no tasks to display.");
+            }
+            
         }
 
-        public void ListTasksByStatus(Status status)
+        public void ListTasksByStatus(string status)
         {
             IEnumerable<TaskModel> tasks = _tasks.Where(t => t.Status == status).ToList();
 
@@ -91,6 +100,10 @@ namespace TaskCLI
                 {
                     Console.WriteLine(t);
                 }
+            }
+            else
+            {
+                Console.WriteLine("There are no tasks to display.");
             }
         }
 

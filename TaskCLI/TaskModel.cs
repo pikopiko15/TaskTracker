@@ -6,7 +6,7 @@
         
         public string? Description { get; set; }
         
-        public Status Status { get; set; }
+        public string Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
@@ -16,7 +16,7 @@
         {
             Id = id;
             Description = description;
-            Status = Status.Todo;
+            Status = "todo";
             CreatedAt = DateTime.Now;
             UpdatedAt = DateTime.Now;
         }
