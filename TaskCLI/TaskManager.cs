@@ -9,7 +9,7 @@ namespace TaskCLI
 
         private List<TaskModel> _tasks;
 
-        public static readonly string[] ValidStatuses = { "Todo", "InProgress", "Done" };
+        public static readonly string[] ValidStatuses = { "Todo", "InProgress", "In-Progress", "Done" };
 
         public TaskManager()
         {
@@ -59,6 +59,7 @@ namespace TaskCLI
                 task.Status = status;
                 task.UpdatedAt = DateTime.Now;
                 SaveTasks();
+                Console.WriteLine($"Task updated successfully (ID: {id})");
             }
             else
             {
