@@ -2,6 +2,7 @@
 
 ## Description
 A command-line task tracker built with C# and .NET.<br>
+The project URL https://roadmap.sh/projects/task-tracker
 
 ## The user should be able to:
 
