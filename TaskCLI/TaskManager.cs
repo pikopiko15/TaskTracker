@@ -9,6 +9,8 @@ namespace TaskCLI
 
         private List<TaskModel> _tasks;
 
+        public static readonly string[] ValidStatuses = { "Todo", "InProgress", "Done" };
+
         public TaskManager()
         {
             _tasks = LoadTasks() ?? new List<TaskModel>();
@@ -16,7 +18,7 @@ namespace TaskCLI
 
         public void AddTask(string description)
         {
-            int id = _tasks.Count + 1;
+            int id = _tasks.Any() ? _tasks.Max(t => t.Id) + 1 : 1;
             TaskModel task = new TaskModel(id, description);
 
             _tasks.Add(task);
@@ -44,6 +46,12 @@ namespace TaskCLI
 
         public void UpdateTaskStatus(int id, string status)
         {
+            if(!ValidStatuses.Contains(status, StringComparer.OrdinalIgnoreCase))
+            {
+                Console.WriteLine($"Invalid status: {status}. Valid statuses are: {string.Join(", ", ValidStatuses)}");
+                return;
+            }
+
             var task = _tasks.Find(t => t.Id == id);
 
             if(task != null)
@@ -92,9 +100,16 @@ namespace TaskCLI
 
         public void ListTasksByStatus(string status)
         {
-            IEnumerable<TaskModel> tasks = _tasks.Where(t => t.Status == status).ToList();
+            if (!ValidStatuses.Contains(status, StringComparer.OrdinalIgnoreCase))
+            {
+                Console.WriteLine($"Invalid status: {status}. Valid statuses are: {string.Join(", ", ValidStatuses)}");
+                return;
+            }
 
-            if(tasks.Any())
+            IEnumerable<TaskModel> tasks = _tasks.Where(t =>
+                 t.Status.Equals(status, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            if (tasks.Any())
             {
                 foreach(var t in tasks)
                 {
@@ -147,8 +162,14 @@ namespace TaskCLI
         {
             try
             {
-                var jsonData = JsonSerializer.Serialize(_tasks, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(FilePath, jsonData);
+                using (FileStream fs = new FileStream(FilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    var jsonData = JsonSerializer.Serialize(_tasks, new JsonSerializerOptions { WriteIndented = true });
+                    using (StreamWriter writer = new StreamWriter(fs))
+                    {
+                        writer.Write(jsonData);
+                    }
+                }
             }
             catch(Exception ex)
             {
